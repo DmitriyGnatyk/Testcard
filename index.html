@@ -2,271 +2,236 @@
 <html lang="uk">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>S L O W E D | V I B E</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>W O R R Y</title>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@900&family=Rajdhani:wght@600&display=swap');
 
         :root {
-            --primary: #ff003c; /* Криваво-червоний неон */
-            --bg-dark: #050505;
+            --neon: #ff003c;
+            --bg: #000;
         }
 
-        * { margin: 0; padding: 0; box-sizing: border-box; user-select: none; }
+        * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
 
         body {
-            background-color: var(--bg-dark);
-            color: #fff;
+            background: var(--bg);
+            color: white;
             font-family: 'Rajdhani', sans-serif;
             height: 100vh;
+            width: 100vw;
             overflow: hidden;
             display: flex;
             justify-content: center;
             align-items: center;
         }
 
-        /* ФОНОВЕ ВІДЕО */
+        /* АДАПТИВНИЙ ФОН */
         .video-bg {
-            position: absolute;
+            position: fixed;
             top: 50%; left: 50%;
             min-width: 100%; min-height: 100%;
             width: auto; height: auto;
             transform: translate(-50%, -50%);
             z-index: -2;
             object-fit: cover;
-            opacity: 0.3; /* Затемнюємо відео, щоб текст було видно */
-            filter: grayscale(80%) contrast(120%);
+            opacity: 0.4;
+            filter: contrast(120%) brightness(0.8);
         }
 
-        /* ЕФЕКТ ВІНЬЄТКИ ТА ШУМУ ЗВЕРХУ ВІДЕО */
-        .overlay-fx {
-            position: absolute;
+        .overlay {
+            position: fixed;
             top: 0; left: 0; width: 100%; height: 100%;
-            background: radial-gradient(circle, rgba(0,0,0,0) 20%, rgba(0,0,0,0.9) 100%);
+            background: radial-gradient(circle, transparent 20%, rgba(0,0,0,0.8) 100%);
             z-index: -1;
         }
 
-        /* СТАРТОВИЙ ЕКРАН */
+        /* ЕКРАН ВХОДУ (ДЛЯ АЙФОНА) */
         #enter-screen {
-            position: absolute;
+            position: fixed;
             top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0, 0, 0, 0.95);
-            z-index: 100;
+            background: #000;
+            z-index: 999;
             display: flex;
             justify-content: center;
             align-items: center;
             cursor: pointer;
-            transition: opacity 1s ease-out, backdrop-filter 1s;
-            backdrop-filter: blur(10px);
+            transition: 0.8s ease;
         }
 
         #enter-text {
             font-family: 'Montserrat', sans-serif;
-            font-size: 2.5rem;
-            letter-spacing: 15px;
-            color: transparent;
-            -webkit-text-stroke: 1px var(--primary);
-            text-shadow: 0 0 20px rgba(255,0,60,0.5);
-            animation: pulseText 1.5s infinite alternate;
+            font-size: 1.2rem;
+            letter-spacing: 8px;
+            color: var(--neon);
+            text-shadow: 0 0 15px var(--neon);
+            animation: blink 1s infinite alternate;
         }
 
-        @keyframes pulseText {
-            0% { transform: scale(1); text-shadow: 0 0 10px var(--primary); }
-            100% { transform: scale(1.05); text-shadow: 0 0 30px var(--primary), 0 0 50px var(--primary); }
-        }
-
-        /* ГОЛОВНА КАРТКА ПРОФІЛЮ */
-        .profile-card {
-            position: relative;
-            z-index: 10;
-            text-align: center;
-            padding: 40px;
-            background: rgba(10, 10, 10, 0.6);
-            border: 1px solid rgba(255, 255, 255, 0.05);
+        /* КАРТКА ПРОФІЛЮ (АДАПТИВ) */
+        .card {
+            width: 90%;
+            max-width: 380px;
+            padding: 30px;
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.1);
             border-radius: 20px;
             backdrop-filter: blur(15px);
+            -webkit-backdrop-filter: blur(15px);
+            text-align: center;
             opacity: 0;
-            transform: translateY(50px) scale(0.9);
-            transition: all 1.2s cubic-bezier(0.2, 1, 0.3, 1);
-            /* Тінь буде керуватися JS під біт */
-            box-shadow: 0 0 0px var(--primary); 
-        }
-
-        /* АВАТАР */
-        .avatar-container {
-            position: relative;
-            width: 160px; height: 160px;
-            margin: 0 auto 20px;
-            border-radius: 50%;
+            transform: scale(0.8);
+            transition: 1s cubic-bezier(0.2, 1, 0.3, 1);
+            box-shadow: 0 0 20px rgba(0,0,0,0.5);
         }
 
         .avatar {
-            width: 100%; height: 100%;
+            width: 120px; height: 120px;
             border-radius: 50%;
+            border: 2px solid var(--neon);
+            margin: 0 auto 20px;
             object-fit: cover;
-            border: 2px solid var(--primary);
-            filter: grayscale(30%);
-            transition: filter 0.3s;
+            box-shadow: 0 0 15px var(--neon);
+            transition: 0.3s;
         }
 
-        /* ТЕКСТ */
         h1 {
             font-family: 'Montserrat', sans-serif;
-            font-size: 2rem;
+            font-size: 1.8rem;
+            letter-spacing: 4px;
+            margin-bottom: 10px;
             text-transform: uppercase;
-            letter-spacing: 5px;
-            margin-bottom: 5px;
-            color: #fff;
         }
 
-        .status {
-            color: var(--primary);
-            font-size: 1rem;
-            letter-spacing: 3px;
-            margin-bottom: 30px;
-            text-shadow: 0 0 10px var(--primary);
+        .track-info {
+            font-size: 0.8rem;
+            color: var(--neon);
+            margin-bottom: 25px;
+            letter-spacing: 2px;
         }
 
-        /* КНОПКИ-ЛІНКИ */
-        .links {
-            display: flex;
-            flex-direction: column;
-            gap: 15px;
-        }
+        .links { display: grid; gap: 12px; }
 
-        .link-btn {
-            padding: 15px 30px;
-            background: transparent;
+        .link {
+            padding: 12px;
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 8px;
             color: #fff;
             text-decoration: none;
-            font-size: 1.1rem;
+            font-size: 0.9rem;
             letter-spacing: 2px;
-            border: 1px solid rgba(255, 0, 60, 0.3);
-            border-radius: 10px;
-            transition: all 0.3s ease;
-            position: relative;
-            overflow: hidden;
+            transition: 0.3s;
+            background: rgba(255,255,255,0.02);
         }
 
-        .link-btn::before {
-            content: '';
-            position: absolute;
-            top: 0; left: -100%; width: 100%; height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(255,0,60,0.4), transparent);
-            transition: 0.5s;
+        .link:active, .link:hover {
+            background: var(--neon);
+            box-shadow: 0 0 20px var(--neon);
+            color: #000;
+            font-weight: bold;
         }
 
-        .link-btn:hover {
-            background: rgba(255, 0, 60, 0.1);
-            border-color: var(--primary);
-            box-shadow: 0 0 20px rgba(255, 0, 60, 0.4);
-            transform: scale(1.05);
+        @keyframes blink {
+            from { opacity: 0.3; }
+            to { opacity: 1; }
         }
 
-        .link-btn:hover::before {
-            left: 100%;
+        /* ГЛІТЧ ЕФЕКТ ПРИ БАСАХ */
+        .bass-shake {
+            animation: shake 0.1s infinite;
+        }
+
+        @keyframes shake {
+            0% { transform: translate(1px, 1px); }
+            50% { transform: translate(-1px, -1px); }
+            100% { transform: translate(1px, -1px); }
         }
     </style>
 </head>
 <body>
 
     <video class="video-bg" autoplay loop muted playsinline>
-        <source src="https://assets.mixkit.co/videos/preview/mixkit-black-and-white-abstract-particles-in-slow-motion-41893-large.mp4" type="video/mp4">
+        <source src="https://assets.mixkit.co/videos/preview/mixkit-abstract-fast-particles-moving-in-the-dark-32865-large.mp4" type="video/mp4">
     </video>
-    <div class="overlay-fx"></div>
+    <div class="overlay"></div>
 
     <div id="enter-screen">
-        <div id="enter-text">[ TAP TO ENTER ]</div>
+        <div id="enter-text">[ ТОРКНИСЬ, ЩОБ УВІЙТИ ]</div>
     </div>
 
-    <audio id="audio" loop>
-        <source src="https://cdn.discordapp.com/attachments/1068840130635534346/1206655122114125864/worry_slowed.mp3" type="audio/mpeg">
-    </audio>
-
-
-    <div class="profile-card" id="card">
-        <div class="avatar-container" id="avatar-container">
-            <img src="https://picsum.photos/400/400?grayscale" class="avatar" alt="Avatar">
-        </div>
-        
+    <div class="card" id="card">
+        <img src="https://picsum.photos/300/300?grayscale" class="avatar" id="avatar">
         <h1>GHOST</h1>
-        <div class="status">WORRY // SLOWED</div>
-
+        <div class="track-info">WORRY // SLOWED</div>
+        
         <div class="links">
-            <a href="#" class="link-btn">INSTAGRAM</a>
-            <a href="#" class="link-btn">TELEGRAM</a>
-            <a href="#" class="link-btn">SPOTIFY</a>
+            <a href="#" class="link">TELEGRAM</a>
+            <a href="#" class="link">INSTAGRAM</a>
+            <a href="#" class="link">SPOTIFY</a>
         </div>
     </div>
+
+    <audio id="audio" loop playsinline>
+        <source src="music.mp3" type="audio/mpeg">
+    </audio>
 
     <script>
         const enterScreen = document.getElementById('enter-screen');
         const card = document.getElementById('card');
         const audio = document.getElementById('audio');
-        const avatarContainer = document.getElementById('avatar-container');
+        const avatar = document.getElementById('avatar');
         
-        let audioContext, analyser, source, dataArray;
-        let isInitialized = false;
+        let audioCtx, analyser, dataArray, source;
 
         enterScreen.addEventListener('click', () => {
-            // 1. Анімація зникнення екрану входу
-            enterScreen.style.opacity = '0';
-            enterScreen.style.pointerEvents = 'none';
+            // Запуск звуку на Айфоні потребує прямого кліку
+            startAudio();
             
-            // 2. Поява профілю
+            enterScreen.style.opacity = '0';
             setTimeout(() => {
+                enterScreen.style.display = 'none';
                 card.style.opacity = '1';
-                card.style.transform = 'translateY(0) scale(1)';
-            }, 500);
-
-            // 3. Запуск музики та візуалізації
-            if (!isInitialized) {
-                setupAudio();
-            }
+                card.style.transform = 'scale(1)';
+            }, 800);
         });
 
-        function setupAudio() {
-            // Граємо музику
-            audio.play().catch(e => console.log("Файл не знайдено або браузер блокує:", e));
-
-            // Підключаємо Web Audio API для аналізу бітів
-            audioContext = new (window.AudioContext || window.webkitAudioContext)();
-            analyser = audioContext.createAnalyser();
+        function startAudio() {
+            audio.play();
             
-            source = audioContext.createMediaElementSource(audio);
+            // Налаштування візуалізації (Web Audio API)
+            audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+            analyser = audioCtx.createAnalyser();
+            source = audioCtx.createMediaElementSource(audio);
             source.connect(analyser);
-            analyser.connect(audioContext.destination);
-            
-            analyser.fftSize = 256;
+            analyser.connect(audioCtx.destination);
+
+            analyser.fftSize = 64;
             const bufferLength = analyser.frequencyBinCount;
             dataArray = new Uint8Array(bufferLength);
-            
-            isInitialized = true;
-            renderPulse();
+
+            updateVisuals();
         }
 
-        function renderPulse() {
-            requestAnimationFrame(renderPulse);
-            
-            if (isInitialized) {
-                analyser.getByteFrequencyData(dataArray);
-                
-                // Рахуємо середнє значення низьких частот (БАСИ)
-                let bass = 0;
-                for (let i = 0; i < 5; i++) { // беремо перші 5 частот
-                    bass += dataArray[i];
-                }
-                bass = bass / 5;
+        function updateVisuals() {
+            requestAnimationFrame(updateVisuals);
+            analyser.getByteFrequencyData(dataArray);
 
-                // Математика для ефектів: якщо бас сильний - збільшуємо
-                // scale від 1 до ~1.15
-                const scale = 1 + (bass / 1500); 
-                // тінь від 0 до ~50px
-                const shadowGlow = bass / 4; 
+            // Беремо бас (перші кілька частот)
+            let bassValue = dataArray[1]; 
 
-                // Застосовуємо ефекти до аватарки і картки в реальному часі!
-                avatarContainer.style.transform = `scale(${scale})`;
-                card.style.boxShadow = `0 0 ${shadowGlow}px rgba(255, 0, 60, 0.8)`;
+            // Пульсація аватарки під біт
+            let scale = 1 + (bassValue / 500);
+            avatar.style.transform = `scale(${scale})`;
+
+            // Додаємо ефект світіння картки під бас
+            let glow = bassValue / 4;
+            card.style.boxShadow = `0 0 ${glow}px rgba(255, 0, 60, 0.6)`;
+
+            // Якщо баси дуже сильні — легкий трус (глітч)
+            if (bassValue > 210) {
+                document.body.classList.add('bass-shake');
+            } else {
+                document.body.classList.remove('bass-shake');
             }
         }
     </script>
