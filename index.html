@@ -3,11 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>BLACK BASS · PROFILE</title>
-    <!-- Font Awesome 6 (іконки) -->
+    <title>NEO HUD // BASS LOCK</title>
+    <!-- Іконки та шрифти -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
-    <!-- Гугл шрифт (сучасний гротеск) -->
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;500;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Aldrich&family=Rajdhani:wght@300;600;700&display=swap" rel="stylesheet">
     <style>
         * {
             margin: 0;
@@ -16,464 +15,468 @@
         }
 
         body {
-            font-family: 'Plus Jakarta Sans', sans-serif;
-            background: #0a0a0a;
+            background: #030405;
+            font-family: 'Rajdhani', sans-serif;
             min-height: 100vh;
             display: flex;
             align-items: center;
             justify-content: center;
-            color: #ffffff;
+            color: #c0f0f0;
             overflow-x: hidden;
+            position: relative;
         }
 
-        /* ---------- СПЛАШ (чорний, агресивний) ---------- */
-        #splash-screen {
+        /* Глітч-підкладка (сітка) */
+        .grid-overlay {
             position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: #000000;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background-image: 
+                linear-gradient(rgba(0, 255, 255, 0.02) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(0, 255, 255, 0.02) 1px, transparent 1px);
+            background-size: 40px 40px;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        /* Прелоудер — калібрування HUD */
+        #hud-splash {
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            background: #020208;
+            z-index: 1000;
             display: flex;
             align-items: center;
             justify-content: center;
-            z-index: 1000;
-            transition: opacity 0.8s cubic-bezier(0.77, 0, 0.18, 1), visibility 0.8s;
-            cursor: pointer;
-        }
-
-        .splash-content {
-            text-align: center;
-            opacity: 0.9;
-        }
-
-        .splash-content i {
-            font-size: 5rem;
-            color: #ffffff;
-            text-shadow: 0 0 30px #888888, 0 0 60px #444444;
-            animation: throb 2.2s infinite ease-out;
-        }
-
-        .splash-content h1 {
-            font-size: 3.5rem;
-            font-weight: 800;
-            letter-spacing: 8px;
-            color: #ffffff;
-            text-shadow: 0 0 15px #aaaaaa;
-            margin: 20px 0 10px;
-            background: linear-gradient(135deg, #f0f0f0, #a0a0a0);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-        }
-
-        .splash-content p {
-            font-size: 1.2rem;
-            color: #cccccc;
-            border: 1px solid #333333;
-            padding: 12px 30px;
-            border-radius: 60px;
+            transition: opacity 0.8s, visibility 0.8s;
+            border: 3px solid #0ff;
+            box-shadow: inset 0 0 150px #0ff2;
             backdrop-filter: blur(5px);
-            background: rgba(20,20,20,0.5);
-            display: inline-block;
+        }
+
+        .calibration-panel {
+            max-width: 650px;
+            width: 90%;
+            background: rgba(0, 10, 10, 0.5);
+            border: 2px solid #0ff;
+            padding: 30px;
+            box-shadow: 0 0 70px #0ff;
+            backdrop-filter: blur(15px);
+        }
+
+        .hud-line {
+            font-family: 'Aldrich', monospace;
+            font-size: 1.5rem;
+            color: #0ff;
             text-transform: uppercase;
-            letter-spacing: 2px;
+            letter-spacing: 3px;
+            margin: 15px 0;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            border-bottom: 1px solid #0ff3;
+            padding-bottom: 8px;
         }
 
-        @keyframes throb {
-            0% { transform: scale(1); text-shadow: 0 0 30px #888; }
-            50% { transform: scale(1.1); text-shadow: 0 0 80px #fff; }
-            100% { transform: scale(1); text-shadow: 0 0 30px #888; }
-        }
-
-        /* ---------- ГОЛОВНИЙ КОНТЕНТ (спочатку прихований) ---------- */
-        #main-content {
-            position: relative;
-            z-index: 10;
+        .progress-bar {
             width: 100%;
-            max-width: 600px;
+            height: 20px;
+            background: #021010;
+            border: 1px solid #0ff;
+            margin: 15px 0;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            width: 0%;
+            height: 100%;
+            background: #0ff;
+            box-shadow: 0 0 30px cyan;
+            transition: width 0.2s;
+        }
+
+        .blink-cursor {
+            display: inline-block;
+            width: 20px;
+            height: 30px;
+            background: #0ff;
+            animation: blink 1s step-end infinite;
+        }
+
+        @keyframes blink {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0; }
+        }
+
+        /* Головний HUD (прихований) */
+        #hud-main {
+            position: relative;
+            z-index: 100;
+            width: 100%;
+            max-width: 1200px;
             padding: 20px;
             opacity: 0;
             visibility: hidden;
-            transition: opacity 0.8s ease, visibility 0.8s;
+            transition: opacity 0.7s, visibility 0.7s;
             pointer-events: none;
         }
 
-        #main-content.visible {
+        #hud-main.visible {
             opacity: 1;
             visibility: visible;
             pointer-events: all;
         }
 
-        /* Картка: темне скло */
-        .profile-card {
-            background: rgba(10, 10, 10, 0.7);
-            backdrop-filter: blur(18px);
-            -webkit-backdrop-filter: blur(18px);
-            border: 1px solid rgba(255, 255, 255, 0.08);
-            border-radius: 50px;
-            padding: 2.5rem 2rem;
-            box-shadow: 0 30px 70px rgba(0, 0, 0, 0.9), 0 0 0 1px rgba(255,255,255,0.03) inset;
-            transition: box-shadow 0.15s, border-color 0.15s;
-            text-align: center;
-        }
-
-        /* Аватар з чорним ореолом */
-        .avatar-wrapper {
-            width: 150px;
-            height: 150px;
-            margin: 0 auto 1.8rem;
-            border-radius: 50%;
-            background: #1a1a1a;
-            padding: 5px;
-            box-shadow: 0 0 40px rgba(255,255,255,0.1);
-            transition: transform 0.08s linear, box-shadow 0.2s;
-        }
-
-        .avatar {
-            width: 100%;
-            height: 100%;
-            border-radius: 50%;
-            object-fit: cover;
-            border: 2px solid #2a2a2a;
-            filter: grayscale(30%);
-        }
-
-        /* Ім'я */
-        h2 {
-            font-size: 2.2rem;
-            font-weight: 800;
-            letter-spacing: 2px;
-            background: linear-gradient(135deg, #e0e0e0, #808080);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            margin-bottom: 0.3rem;
-            text-transform: uppercase;
-        }
-
-        /* Соціальні іконки (чорно-білі, але стильні) */
-        .social-links {
-            display: flex;
-            flex-wrap: wrap;
-            justify-content: center;
-            gap: 1.2rem;
-            margin: 2rem 0 1.8rem;
-        }
-
-        .social-link {
-            width: 70px;
-            height: 70px;
-            border-radius: 30px;
-            background: #1c1c1c;
-            border: 1px solid #333;
-            display: flex;
+        /* ХАД-панель */
+        .hud-container {
+            display: grid;
+            grid-template-columns: 1fr 1.5fr 1fr;
+            gap: 20px;
             align-items: center;
-            justify-content: center;
-            font-size: 2.2rem;
-            color: #ccc;
-            text-decoration: none;
-            transition: 0.2s cubic-bezier(0.2, 0.9, 0.3, 1.2);
-            box-shadow: 0 10px 20px rgba(0,0,0,0.7);
         }
 
-        .social-link:hover {
-            transform: translateY(-8px) scale(1.1);
-            background: #2a2a2a;
-            border-color: #aaa;
-            color: #fff;
-            box-shadow: 0 0 35px #888;
+        /* ліва панель (метрики) */
+        .metrics-panel {
+            background: rgba(0, 5, 8, 0.7);
+            backdrop-filter: blur(20px);
+            border: 2px solid #0ff;
+            padding: 25px 15px;
+            box-shadow: 0 0 50px #0ff3, inset 0 0 30px #0ff1;
+            border-radius: 10px;
         }
 
-        /* візуалізатор (чорний стиль) */
-        .visualizer {
-            width: 100%;
-            height: 100px;
-            margin: 1.8rem 0 1.2rem;
-            border-radius: 40px;
-            background: #0f0f0f;
-            border: 1px solid #2a2a2a;
-            overflow: hidden;
-            box-shadow: inset 0 0 20px #000000;
+        .metric-item {
+            margin: 25px 0;
         }
 
-        canvas {
-            width: 100%;
-            height: 100%;
-            display: block;
-            filter: grayscale(100%) contrast(1.2);
-        }
-
-        /* Індикатор "Now playing" */
-        .now-playing {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 12px;
+        .metric-label {
             font-size: 0.9rem;
-            font-weight: 300;
-            letter-spacing: 3px;
-            color: #aaa;
-            background: rgba(0,0,0,0.5);
-            padding: 10px 20px;
-            border-radius: 60px;
-            width: fit-content;
-            margin: 0 auto;
-            border: 1px solid #2a2a2a;
-            backdrop-filter: blur(5px);
+            color: #8ff;
+            letter-spacing: 2px;
             text-transform: uppercase;
+            display: flex;
+            justify-content: space-between;
         }
 
-        .now-playing i {
-            color: #ccc;
-            animation: pulse 2s infinite;
-        }
-
-        @keyframes pulse {
-            0% { opacity: 0.3; }
-            50% { opacity: 1; }
-            100% { opacity: 0.3; }
-        }
-
-        /* Чорні басові частинки */
-        .particle-field {
-            position: fixed;
-            top: 0;
-            left: 0;
+        .metric-bar-bg {
             width: 100%;
-            height: 100%;
-            z-index: 0;
-            pointer-events: none;
+            height: 12px;
+            background: #011;
+            border: 1px solid #0ff;
+            margin-top: 5px;
         }
 
-        .bass-particle {
-            position: absolute;
-            background: #1a1a1a;
+        .metric-bar-fill {
+            height: 100%;
+            width: 20%;
+            background: #0ff;
+            box-shadow: 0 0 20px cyan;
+            transition: width 0.1s;
+        }
+
+        /* центральний модуль (аватар + соц іконки) */
+        .center-hud {
+            background: rgba(0, 8, 12, 0.6);
+            backdrop-filter: blur(25px);
+            border: 3px solid #0ff;
             border-radius: 50%;
-            box-shadow: 0 0 20px #3a3a3a;
-            transition: transform 0.12s cubic-bezier(0.2, 0.9, 0.3, 1.2), width 0.1s, height 0.1s;
+            padding: 15px;
+            aspect-ratio: 1/1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 0 120px #0ff5, inset 0 0 50px #0ff3;
+            transition: box-shadow 0.1s, border-color 0.1s;
+        }
+
+        .hud-avatar {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            border: 4px solid #0ff;
+            object-fit: cover;
+            filter: grayscale(0.5) contrast(1.5);
+            box-shadow: 0 0 40px cyan;
+            transition: transform 0.1s, filter 0.2s;
+        }
+
+        .social-hud {
+            display: flex;
+            gap: 20px;
+            margin-top: 25px;
+        }
+
+        .social-hud a {
+            color: #0ff;
+            font-size: 2rem;
+            text-shadow: 0 0 20px cyan;
+            transition: 0.15s;
+            opacity: 0.8;
+        }
+
+        .social-hud a:hover {
+            opacity: 1;
+            transform: scale(1.2);
+            text-shadow: 0 0 40px #0ff, 0 0 80px magenta;
+        }
+
+        /* права панель (спектр, баси) */
+        .spectrum-panel {
+            background: rgba(0, 5, 8, 0.7);
+            backdrop-filter: blur(20px);
+            border: 2px solid #0ff;
+            padding: 25px 15px;
+            box-shadow: 0 0 50px #0ff3, inset 0 0 30px #0ff1;
+            border-radius: 10px;
+            height: 100%;
+        }
+
+        .spectrum-visual {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            margin-top: 15px;
+        }
+
+        .spectrum-band {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .band-label {
+            width: 50px;
+            color: #8ff;
+            font-size: 0.8rem;
+        }
+
+        .band-bar-bg {
+            flex: 1;
+            height: 18px;
+            background: #011;
+            border: 1px solid #0ff;
+        }
+
+        .band-bar-fill {
+            height: 100%;
+            width: 0%;
+            background: #0ff;
+            box-shadow: 0 0 20px cyan;
+            transition: width 0.05s;
+        }
+
+        .bpm-counter {
+            font-size: 2rem;
+            font-weight: 700;
+            color: #0ff;
+            text-shadow: 0 0 30px cyan;
+            margin: 20px 0;
+            text-align: center;
         }
 
         audio { display: none; }
     </style>
 </head>
 <body>
-    <!-- ЧОРНИЙ СПЛАШ -->
-    <div id="splash-screen">
-        <div class="splash-content">
-            <i class="fas fa-volume-off"></i>
-            <h1>DARK BASS</h1>
-            <p>⚡ натисни, щоб прокинутись ⚡</p>
+    <div class="grid-overlay"></div>
+
+    <!-- СПЛАШ: КАЛІБРУВАННЯ HUD -->
+    <div id="hud-splash">
+        <div class="calibration-panel">
+            <div class="hud-line">> HUD CALIBRATION v.2.07 <span class="blink-cursor"></span></div>
+            <div class="hud-line">> LINKING AUDIO INTERFACE</div>
+            <div class="progress-bar"><div class="progress-fill" id="progressFill" style="width: 0%;"></div></div>
+            <div class="hud-line">> BASS DETECTION MODULE <span id="statusText">OFFLINE</span></div>
+            <div class="hud-line" style="font-size: 1rem; color: #6ff;">> НАТИСНИ БУДЬ-ДЕ, ЩОБ АКТИВУВАТИ</div>
         </div>
     </div>
 
-    <!-- ОСНОВНА КАРТКА -->
-    <div id="main-content">
-        <div class="profile-card" id="profileCard">
-            <div class="avatar-wrapper" id="avatarWrapper">
-                <img src="https://i.pravatar.cc/400?img=5" alt="avatar" class="avatar" id="avatarImg">
+    <!-- ГОЛОВНИЙ HUD -->
+    <div id="hud-main">
+        <div class="hud-container">
+            <!-- Ліва панель: метрики -->
+            <div class="metrics-panel">
+                <div class="metric-item">
+                    <div class="metric-label"><span>BASS LEVEL</span> <span id="bassValue">0%</span></div>
+                    <div class="metric-bar-bg"><div class="metric-bar-fill" id="bassBar" style="width: 0%;"></div></div>
+                </div>
+                <div class="metric-item">
+                    <div class="metric-label"><span>SUBSONIC</span> <span id="subValue">0%</span></div>
+                    <div class="metric-bar-bg"><div class="metric-bar-fill" id="subBar" style="width: 0%;"></div></div>
+                </div>
+                <div class="metric-item">
+                    <div class="metric-label"><span>PUNCH</span> <span id="punchValue">0%</span></div>
+                    <div class="metric-bar-bg"><div class="metric-bar-fill" id="punchBar" style="width: 0%;"></div></div>
+                </div>
+                <div class="metric-item">
+                    <div class="metric-label"><span>HZ DROP</span> <span id="dropValue">0</span></div>
+                    <div class="metric-bar-bg"><div class="metric-bar-fill" id="dropBar" style="width: 0%;"></div></div>
+                </div>
             </div>
-            <h2>⚡ GHOST ⚡</h2>
 
-            <div class="social-links">
-                <a href="#" class="social-link github" target="_blank"><i class="fab fa-github"></i></a>
-                <a href="#" class="social-link spotify" target="_blank"><i class="fab fa-spotify"></i></a>
-                <a href="#" class="social-link telegram" target="_blank"><i class="fab fa-telegram"></i></a>
-                <a href="#" class="social-link steam" target="_blank"><i class="fab fa-steam"></i></a>
+            <!-- Центр: аватар + соціальні -->
+            <div class="center-hud" id="centerHud">
+                <img src="https://i.pravatar.cc/300?img=7" alt="avatar" class="hud-avatar" id="hudAvatar">
+                <div class="social-hud">
+                    <a href="#"><i class="fab fa-github"></i></a>
+                    <a href="#"><i class="fab fa-spotify"></i></a>
+                    <a href="#"><i class="fab fa-telegram"></i></a>
+                    <a href="#"><i class="fab fa-steam"></i></a>
+                </div>
             </div>
 
-            <div class="visualizer">
-                <canvas id="bassCanvas" width="800" height="200"></canvas>
-            </div>
-
-            <div class="now-playing" id="nowPlaying">
-                <i class="fas fa-bolt"></i>   bass pressure   <i class="fas fa-bolt"></i>
+            <!-- Права панель: спектр + BPM -->
+            <div class="spectrum-panel">
+                <div class="bpm-counter" id="bpmDisplay">—</div>
+                <div class="spectrum-visual" id="spectrumBars">
+                    <!-- генеруємо 6 смуг -->
+                </div>
             </div>
         </div>
     </div>
 
-    <!-- поль для частинок -->
-    <div class="particle-field" id="particleField"></div>
-
-    <!-- аудіо -->
     <audio id="myAudio" loop preload="auto">
         <source src="music.mp3" type="audio/mpeg">
     </audio>
 
     <script>
         (function() {
-            // --- ЖОРСТКА ЧОРНА МАГІЯ ---
-            const splash = document.getElementById('splash-screen');
-            const mainContent = document.getElementById('main-content');
+            // ------ HUD СПЛАШ З АНІМАЦІЄЮ ПРОГРЕСБАРУ ------
+            const splash = document.getElementById('hud-splash');
+            const mainHud = document.getElementById('hud-main');
+            const progressFill = document.getElementById('progressFill');
+            const statusText = document.getElementById('statusText');
             const audio = document.getElementById('myAudio');
-            const canvas = document.getElementById('bassCanvas');
-            const ctx = canvas.getContext('2d');
-            const avatarWrapper = document.getElementById('avatarWrapper');
-            const profileCard = document.getElementById('profileCard');
-            const particleField = document.getElementById('particleField');
 
-            // Web Audio
-            let audioContext = null;
-            let analyser = null;
-            let source = null;
-            let isAudioActive = false;
-            let animationFrame = null;
-            let bassSmooth = 0; // для згладжування
-
-            // Створюємо частинки (темні, ледь помітні)
-            function initParticles(count = 40) {
-                for (let i = 0; i < count; i++) {
-                    const p = document.createElement('div');
-                    p.className = 'bass-particle';
-                    const size = Math.random() * 18 + 3;
-                    p.style.width = size + 'px';
-                    p.style.height = size + 'px';
-                    p.style.left = Math.random() * 100 + '%';
-                    p.style.top = Math.random() * 100 + '%';
-                    p.style.background = `#1a1a1a`;
-                    p.style.opacity = Math.random() * 0.4 + 0.1;
-                    p.style.boxShadow = `0 0 ${Math.random()*15 + 5}px #2a2a2a`;
-                    particleField.appendChild(p);
+            let progress = 0;
+            const interval = setInterval(() => {
+                progress += 2;
+                if (progress > 100) progress = 100;
+                progressFill.style.width = progress + '%';
+                if (progress === 100) {
+                    clearInterval(interval);
+                    statusText.innerText = 'ONLINE';
+                    statusText.style.color = '#0f0';
                 }
-            }
-            initParticles(45);
+            }, 40);
 
-            // ========== КЛІК НА СПЛАШ ==========
-            splash.addEventListener('click', async function entry() {
+            // Клік для старту
+            splash.addEventListener('click', async function bootHUD() {
                 try {
-                    if (!audioContext) {
-                        audioContext = new (window.AudioContext || window.webkitAudioContext)();
-                        analyser = audioContext.createAnalyser();
-                        analyser.fftSize = 256; // для детального басу
-                        source = audioContext.createMediaElementSource(audio);
-                        source.connect(analyser);
-                        analyser.connect(audioContext.destination);
-                    }
-                    if (audioContext.state === 'suspended') {
-                        await audioContext.resume();
-                    }
                     await audio.play();
-
-                    // ховаємо сплаш
-                    splash.style.opacity = '0';
-                    splash.style.visibility = 'hidden';
-                    mainContent.classList.add('visible');
-                    isAudioActive = true;
-                    startBassVisualizer();
-
-                } catch (e) {
-                    console.warn('audio block?', e);
-                    // все одно пускаємо, без музики
-                    splash.style.opacity = '0';
-                    splash.style.visibility = 'hidden';
-                    mainContent.classList.add('visible');
-                    // пробуємо ще раз по кліку (на випадок)
+                } catch (e) { console.warn('audio block'); }
+                splash.style.opacity = '0';
+                splash.style.visibility = 'hidden';
+                mainHud.classList.add('visible');
+                if (audio.paused) {
+                    // якщо не вдалося, пробуємо ще
+                    audio.play().catch(() => {});
                 }
+                initBassAnalysis();
             });
 
-            // ========== ФУНКЦІЯ ВІЗУАЛІЗАЦІЇ БАСІВ ==========
-            function startBassVisualizer() {
-                if (!analyser) return;
+            // ------ ГЕНЕРАЦІЯ СМУГ СПЕКТРА ------
+            const spectrumDiv = document.getElementById('spectrumBars');
+            for (let i = 0; i < 6; i++) {
+                const band = document.createElement('div');
+                band.className = 'spectrum-band';
+                band.innerHTML = `
+                    <span class="band-label">${i*20+20}Hz</span>
+                    <div class="band-bar-bg"><div class="band-bar-fill" id="bandFill${i}" style="width:0%"></div></div>
+                `;
+                spectrumDiv.appendChild(band);
+            }
 
-                const dataArray = new Uint8Array(analyser.frequencyBinCount);
+            // ------ WEB AUDIO (ТІЛЬКИ БАС) ------
+            let audioContext, analyser, source;
+            const bassBar = document.getElementById('bassBar');
+            const bassValue = document.getElementById('bassValue');
+            const subBar = document.getElementById('subBar');
+            const subValue = document.getElementById('subValue');
+            const punchBar = document.getElementById('punchBar');
+            const punchValue = document.getElementById('punchValue');
+            const dropBar = document.getElementById('dropBar');
+            const dropValue = document.getElementById('dropValue');
+            const bpmDisplay = document.getElementById('bpmDisplay');
+            const centerHud = document.getElementById('centerHud');
+            const hudAvatar = document.getElementById('hudAvatar');
 
-                function getBass() {
+            function initBassAnalysis() {
+                if (!audioContext) {
+                    audioContext = new (window.AudioContext || window.webkitAudioContext)();
+                    analyser = audioContext.createAnalyser();
+                    analyser.fftSize = 256;
+                    source = audioContext.createMediaElementSource(audio);
+                    source.connect(analyser);
+                    analyser.connect(audioContext.destination);
+                }
+                if (audioContext.state === 'suspended') audioContext.resume();
+
+                const bufferLength = analyser.frequencyBinCount;
+                const dataArray = new Uint8Array(bufferLength);
+
+                function updateHUD() {
                     analyser.getByteFrequencyData(dataArray);
-                    // бас = перші 5 бінів (низькі частоти)
-                    let bassSum = 0;
-                    for (let i = 0; i < 6; i++) bassSum += dataArray[i];
-                    return bassSum / 6; // 0-255
-                }
 
-                function draw() {
-                    if (!isAudioActive) {
-                        // idle-малюнок (чорно-білий)
-                        drawIdle();
-                        animationFrame = requestAnimationFrame(draw);
-                        return;
+                    // бас = перші 4 біни
+                    const bass1 = dataArray[1] || 0;
+                    const bass2 = dataArray[2] || 0;
+                    const bass3 = dataArray[3] || 0;
+                    const sub = dataArray[0] || 0; // інфра-бас
+                    
+                    const avgBass = (bass1 + bass2 + bass3) / 3;
+                    const bassPercent = (avgBass / 255) * 100;
+                    const subPercent = (sub / 255) * 100;
+
+                    // оновлення лівих метрів
+                    bassBar.style.width = bassPercent + '%';
+                    bassValue.innerText = Math.round(bassPercent) + '%';
+                    subBar.style.width = subPercent + '%';
+                    subValue.innerText = Math.round(subPercent) + '%';
+
+                    // punch (середні)
+                    const punch = dataArray[5] || 0;
+                    const punchPercent = (punch / 255) * 100;
+                    punchBar.style.width = punchPercent + '%';
+                    punchValue.innerText = Math.round(punchPercent) + '%';
+
+                    // drop (низькі + випадковість)
+                    const dropRand = Math.random() * 20 + bassPercent * 0.6;
+                    dropBar.style.width = Math.min(dropRand, 100) + '%';
+                    dropValue.innerText = Math.round(bassPercent * 0.8) + ' Hz';
+
+                    // імітація BPM (залежить від басу)
+                    const fakeBpm = 80 + Math.round(bassPercent * 1.2);
+                    bpmDisplay.innerText = fakeBpm + ' BPM';
+
+                    // оновлення 6 смуг справа
+                    for (let i = 0; i < 6; i++) {
+                        const val = dataArray[i * 3] || 0;
+                        const percent = (val / 255) * 100;
+                        const bandFill = document.getElementById(`bandFill${i}`);
+                        if (bandFill) bandFill.style.width = percent + '%';
                     }
 
-                    const rawBass = getBass();
-                    // згладжування
-                    bassSmooth = bassSmooth * 0.7 + rawBass * 0.3;
+                    // ЕФЕКТ НА ЦЕНТРАЛЬНОМУ HUD (пульс)
+                    const scale = 1 + (bassPercent / 500);
+                    centerHud.style.transform = `scale(${scale})`;
+                    const glow = 50 + bassPercent * 3;
+                    centerHud.style.boxShadow = `0 0 ${glow}px #0ff5, inset 0 0 50px #0ff3`;
 
-                    // --- ЕФЕКТИ ВІД БАСУ ---
-                    // 1. Масштаб аватара
-                    const scale = 1 + (bassSmooth / 900);  // максимум ~1.25
-                    avatarWrapper.style.transform = `scale(${scale})`;
-
-                    // 2. Зміна тіні картки
-                    const shadowIntensity = bassSmooth / 40;
-                    profileCard.style.boxShadow = `0 30px 70px rgba(0,0,0,0.9), 0 0 0 1px rgba(255,255,255,0.03) inset, 0 0 ${30 + shadowIntensity}px #3a3a3a`;
-
-                    // 3. Частинки: рух і розмір
-                    const particles = document.querySelectorAll('.bass-particle');
-                    particles.forEach(p => {
-                        const move = bassSmooth * 0.08;
-                        const dx = (Math.random() - 0.5) * move;
-                        const dy = (Math.random() - 0.5) * move;
-                        const scaleP = 1 + (bassSmooth / 400);
-                        p.style.transform = `translate(${dx}px, ${dy}px) scale(${scaleP})`;
-                        p.style.opacity = 0.1 + (bassSmooth / 500);
-                    });
-
-                    // 4. Малюємо візуалізатор (тільки бас-смуги)
-                    drawVisualizer(dataArray, bassSmooth);
-
-                    animationFrame = requestAnimationFrame(draw);
-                }
-
-                function drawVisualizer(freqArray, bassLevel) {
-                    ctx.clearRect(0, 0, canvas.width, canvas.height);
-
-                    const barCount = 16; // стильно, небагато
-                    const barWidth = canvas.width / barCount;
-
-                    for (let i = 0; i < barCount; i++) {
-                        // беремо частоти: перші 4 – басові, далі затихаємо
-                        let value;
-                        if (i < 4) {
-                            value = freqArray[i] * 1.8; // підсилення басу
-                        } else {
-                            value = freqArray[i * 3] * 0.5; // високі тихіше
-                        }
-                        const percent = Math.min(value / 255, 1);
-                        const barHeight = canvas.height * percent * 1.3;
-
-                        // колір: від чорного до білого залежно від басу
-                        const brightness = 40 + (bassLevel * 0.4);
-                        ctx.fillStyle = `rgb(${brightness}, ${brightness}, ${brightness})`;
-
-                        // прямокутники з гострими краями
-                        ctx.fillRect(i * barWidth + 4, canvas.height - barHeight, barWidth - 8, barHeight - 2);
+                    // глітч-ефект на аватарі (іноді)
+                    if (bassPercent > 60 && Math.random() > 0.7) {
+                        hudAvatar.style.filter = 'grayscale(1) contrast(2) hue-rotate(90deg)';
+                        setTimeout(() => hudAvatar.style.filter = 'grayscale(0.5) contrast(1.5)', 100);
                     }
-                }
 
-                function drawIdle() {
-                    ctx.clearRect(0, 0, canvas.width, canvas.height);
-                    ctx.fillStyle = '#111';
-                    ctx.fillRect(0, 0, canvas.width, canvas.height);
-                    ctx.fillStyle = '#333';
-                    ctx.font = 'bold 16px "Plus Jakarta Sans"';
-                    ctx.fillText('... bass sleeping ...', 70, canvas.height/2);
+                    requestAnimationFrame(updateHUD);
                 }
-
-                draw();
+                updateHUD();
             }
 
-            // resize canvas
-            function resizeCanvas() {
-                const container = document.querySelector('.visualizer');
-                canvas.width = container.clientWidth;
-                canvas.height = container.clientHeight;
-            }
-            window.addEventListener('resize', resizeCanvas);
-            resizeCanvas();
-
-            // Якщо музика не знайдена
-            audio.addEventListener('error', () => {
-                document.getElementById('nowPlaying').innerHTML = '<i class="fas fa-exclamation-triangle"></i> music.mp3?';
-            });
-
-            // Запасний клік на випадок блокування
+            // резервний старт по кліку
             document.body.addEventListener('click', function forceOnce() {
                 if (splash.style.visibility !== 'hidden' && audio.paused) {
                     splash.click();
