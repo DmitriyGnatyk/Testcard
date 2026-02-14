@@ -3,171 +3,139 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>W O R R Y</title>
+    <title>WORRY | VIBE</title>
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@900&family=Rajdhani:wght@600&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Syncopate:wght@700&family=Inter:wght@300;600&display=swap');
 
         :root {
-            --neon: #ff003c;
-            --bg: #000;
+            --accent: #ff0055; /* Соковитий неон */
+            --bg: #050505;
         }
 
         * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
 
         body {
             background: var(--bg);
-            color: white;
-            font-family: 'Rajdhani', sans-serif;
+            color: #fff;
+            font-family: 'Inter', sans-serif;
             height: 100vh;
-            width: 100vw;
+            display: flex;
+            justify-content: center;
+            align-items: center;
             overflow: hidden;
-            display: flex;
-            justify-content: center;
-            align-items: center;
         }
 
-        /* АДАПТИВНИЙ ФОН */
-        .video-bg {
-            position: fixed;
-            top: 50%; left: 50%;
-            min-width: 100%; min-height: 100%;
-            width: auto; height: auto;
-            transform: translate(-50%, -50%);
+        /* ФОН: ГЛУБОКИЙ ГРАДІЄНТ + ЗЕРНИСТІСТЬ */
+        .bg-layer {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: radial-gradient(circle at center, #111 0%, #000 100%);
             z-index: -2;
-            object-fit: cover;
-            opacity: 0.4;
-            filter: contrast(120%) brightness(0.8);
         }
 
-        .overlay {
-            position: fixed;
-            top: 0; left: 0; width: 100%; height: 100%;
-            background: radial-gradient(circle, transparent 20%, rgba(0,0,0,0.8) 100%);
-            z-index: -1;
-        }
-
-        /* ЕКРАН ВХОДУ (ДЛЯ АЙФОНА) */
+        /* ЕКРАН ВХОДУ */
         #enter-screen {
-            position: fixed;
-            top: 0; left: 0; width: 100%; height: 100%;
-            background: #000;
-            z-index: 999;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            cursor: pointer;
-            transition: 0.8s ease;
+            position: fixed; inset: 0; background: #000; z-index: 1000;
+            display: flex; justify-content: center; align-items: center;
+            transition: opacity 1s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .enter-btn {
+            font-family: 'Syncopate', sans-serif;
+            font-size: 14px; letter-spacing: 5px; color: var(--accent);
+            border: 1px solid var(--accent); padding: 20px 40px;
+            text-transform: uppercase; cursor: pointer;
+            box-shadow: 0 0 15px rgba(255, 0, 85, 0.2);
+            transition: 0.3s;
+        }
+        .enter-btn:active { transform: scale(0.95); background: var(--accent); color: #000; }
+
+        /* ГОЛОВНА КАРТКА */
+        .main-container {
+            position: relative; width: 90%; max-width: 400px;
+            opacity: 0; transform: translateY(30px);
+            transition: 1.5s cubic-bezier(0.2, 1, 0.3, 1);
+            z-index: 10;
         }
 
-        #enter-text {
-            font-family: 'Montserrat', sans-serif;
-            font-size: 1.2rem;
-            letter-spacing: 8px;
-            color: var(--neon);
-            text-shadow: 0 0 15px var(--neon);
-            animation: blink 1s infinite alternate;
+        .glass-card {
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            border-radius: 24px; padding: 40px 20px;
+            backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
+            text-align: center; position: relative; overflow: hidden;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.6);
         }
 
-        /* КАРТКА ПРОФІЛЮ (АДАПТИВ) */
-        .card {
-            width: 90%;
-            max-width: 380px;
-            padding: 30px;
-            background: rgba(255, 255, 255, 0.03);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            border-radius: 20px;
-            backdrop-filter: blur(15px);
-            -webkit-backdrop-filter: blur(15px);
-            text-align: center;
-            opacity: 0;
-            transform: scale(0.8);
-            transition: 1s cubic-bezier(0.2, 1, 0.3, 1);
-            box-shadow: 0 0 20px rgba(0,0,0,0.5);
+        /* ПУЛЬСУЮЧЕ СВІТЛО НА ФОНІ КАРТКИ */
+        .glow {
+            position: absolute; top: 50%; left: 50%;
+            width: 100%; height: 100%;
+            background: var(--accent);
+            filter: blur(120px); opacity: 0.1;
+            transform: translate(-50%, -50%);
+            z-index: -1; transition: opacity 0.1s;
         }
 
         .avatar {
-            width: 120px; height: 120px;
-            border-radius: 50%;
-            border: 2px solid var(--neon);
-            margin: 0 auto 20px;
-            object-fit: cover;
-            box-shadow: 0 0 15px var(--neon);
-            transition: 0.3s;
+            width: 130px; height: 130px; border-radius: 50%;
+            margin: 0 auto 25px; object-fit: cover;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            transition: 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
         }
 
         h1 {
-            font-family: 'Montserrat', sans-serif;
-            font-size: 1.8rem;
-            letter-spacing: 4px;
-            margin-bottom: 10px;
-            text-transform: uppercase;
+            font-family: 'Syncopate', sans-serif; font-size: 1.5rem;
+            letter-spacing: 6px; margin-bottom: 8px; text-transform: uppercase;
         }
 
-        .track-info {
-            font-size: 0.8rem;
-            color: var(--neon);
-            margin-bottom: 25px;
-            letter-spacing: 2px;
+        .sub { font-size: 0.7rem; color: #666; letter-spacing: 3px; margin-bottom: 30px; }
+
+        /* ВІЗУАЛІЗАТОР (СМУЖКИ) */
+        #visualizer {
+            width: 100%; height: 40px; margin-bottom: 20px;
         }
 
-        .links { display: grid; gap: 12px; }
-
+        .links { display: flex; flex-direction: column; gap: 12px; }
         .link {
-            padding: 12px;
-            border: 1px solid rgba(255,255,255,0.1);
-            border-radius: 8px;
-            color: #fff;
-            text-decoration: none;
-            font-size: 0.9rem;
-            letter-spacing: 2px;
-            transition: 0.3s;
-            background: rgba(255,255,255,0.02);
+            padding: 14px; border-radius: 12px;
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            color: #fff; text-decoration: none; font-size: 0.8rem;
+            font-weight: 600; letter-spacing: 1px; transition: 0.3s;
+        }
+        .link:active { background: #fff; color: #000; }
+
+        /* ПЛЕЄР (МІНІМАЛ) */
+        .player-status {
+            margin-top: 30px; font-size: 10px; color: var(--accent);
+            letter-spacing: 2px; text-transform: uppercase;
         }
 
-        .link:active, .link:hover {
-            background: var(--neon);
-            box-shadow: 0 0 20px var(--neon);
-            color: #000;
-            font-weight: bold;
-        }
-
-        @keyframes blink {
-            from { opacity: 0.3; }
-            to { opacity: 1; }
-        }
-
-        /* ГЛІТЧ ЕФЕКТ ПРИ БАСАХ */
-        .bass-shake {
-            animation: shake 0.1s infinite;
-        }
-
-        @keyframes shake {
-            0% { transform: translate(1px, 1px); }
-            50% { transform: translate(-1px, -1px); }
-            100% { transform: translate(1px, -1px); }
-        }
     </style>
 </head>
 <body>
 
-    <video class="video-bg" autoplay loop muted playsinline>
-        <source src="https://assets.mixkit.co/videos/preview/mixkit-abstract-fast-particles-moving-in-the-dark-32865-large.mp4" type="video/mp4">
-    </video>
-    <div class="overlay"></div>
-
-    <div id="enter-screen">
-        <div id="enter-text">[ ТОРКНИСЬ, ЩОБ УВІЙТИ ]</div>
+    <div class="bg-layer"></div>
+    
+    <div id="enter-screen" onclick="initSite()">
+        <div class="enter-btn">ENTER VOID</div>
     </div>
 
-    <div class="card" id="card">
-        <img src="https://picsum.photos/300/300?grayscale" class="avatar" id="avatar">
-        <h1>GHOST</h1>
-        <div class="track-info">WORRY // SLOWED</div>
-        
-        <div class="links">
-            <a href="#" class="link">TELEGRAM</a>
-            <a href="#" class="link">INSTAGRAM</a>
-            <a href="#" class="link">SPOTIFY</a>
+    <div class="main-container" id="main">
+        <div class="glow" id="glow"></div>
+        <div class="glass-card">
+            <img src="https://picsum.photos/400/400?grayscale" class="avatar" id="avatar">
+            <h1>GHOST</h1>
+            <div class="sub">WORRY // SLOWED</div>
+
+            <canvas id="visualizer"></canvas>
+
+            <div class="links">
+                <a href="#" class="link">TELEGRAM</a>
+                <a href="#" class="link">INSTAGRAM</a>
+                <a href="#" class="link">SPOTIFY</a>
+            </div>
+
+            <div class="player-status">Playing: Worry (Slowed)</div>
         </div>
     </div>
 
@@ -176,64 +144,79 @@
     </audio>
 
     <script>
-        const enterScreen = document.getElementById('enter-screen');
-        const card = document.getElementById('card');
         const audio = document.getElementById('audio');
+        const main = document.getElementById('main');
+        const glow = document.getElementById('glow');
         const avatar = document.getElementById('avatar');
-        
-        let audioCtx, analyser, dataArray, source;
+        const canvas = document.getElementById('visualizer');
+        const ctx = canvas.getContext('2d');
 
-        enterScreen.addEventListener('click', () => {
-            // Запуск звуку на Айфоні потребує прямого кліку
-            startAudio();
-            
-            enterScreen.style.opacity = '0';
+        function initSite() {
+            document.getElementById('enter-screen').style.opacity = '0';
             setTimeout(() => {
-                enterScreen.style.display = 'none';
-                card.style.opacity = '1';
-                card.style.transform = 'scale(1)';
-            }, 800);
-        });
+                document.getElementById('enter-screen').remove();
+                main.style.opacity = '1';
+                main.style.transform = 'translateY(0)';
+            }, 1000);
 
-        function startAudio() {
+            startAudioEngine();
+        }
+
+        function startAudioEngine() {
             audio.play();
+            const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+            const analyser = audioCtx.createAnalyser();
+            const source = audioCtx.createMediaElementSource(audio);
             
-            // Налаштування візуалізації (Web Audio API)
-            audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-            analyser = audioCtx.createAnalyser();
-            source = audioCtx.createMediaElementSource(audio);
             source.connect(analyser);
             analyser.connect(audioCtx.destination);
+            analyser.fftSize = 64; 
 
-            analyser.fftSize = 64;
             const bufferLength = analyser.frequencyBinCount;
-            dataArray = new Uint8Array(bufferLength);
+            const dataArray = new Uint8Array(bufferLength);
 
-            updateVisuals();
-        }
+            function draw() {
+                requestAnimationFrame(draw);
+                analyser.getByteFrequencyData(dataArray);
 
-        function updateVisuals() {
-            requestAnimationFrame(updateVisuals);
-            analyser.getByteFrequencyData(dataArray);
+                // Очищуємо канвас
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-            // Беремо бас (перші кілька частот)
-            let bassValue = dataArray[1]; 
+                let barWidth = (canvas.width / bufferLength) * 2.5;
+                let barHeight;
+                let x = 0;
 
-            // Пульсація аватарки під біт
-            let scale = 1 + (bassValue / 500);
-            avatar.style.transform = `scale(${scale})`;
+                // Малюємо смужки
+                for(let i = 0; i < bufferLength; i++) {
+                    barHeight = dataArray[i] / 4;
+                    ctx.fillStyle = `rgba(255, 0, 85, ${barHeight / 40})`;
+                    ctx.fillRect(x, canvas.height - barHeight, barWidth, barHeight);
+                    x += barWidth + 2;
+                }
 
-            // Додаємо ефект світіння картки під бас
-            let glow = bassValue / 4;
-            card.style.boxShadow = `0 0 ${glow}px rgba(255, 0, 60, 0.6)`;
-
-            // Якщо баси дуже сильні — легкий трус (глітч)
-            if (bassValue > 210) {
-                document.body.classList.add('bass-shake');
-            } else {
-                document.body.classList.remove('bass-shake');
+                // Ефекти під бас
+                const bass = dataArray[2]; // Низька частота
+                
+                // Пульсація світіння
+                glow.style.opacity = (bass / 255) * 0.6;
+                
+                // Легке масштабування аватарки (не крінжове)
+                const s = 1 + (bass / 1000);
+                avatar.style.transform = `scale(${s})`;
+                
+                // Тінь карти реагує на бас
+                main.style.filter = `drop-shadow(0 0 ${bass/10}px rgba(255, 0, 85, 0.3))`;
             }
+            draw();
         }
+
+        // Авто-ресайз канваса
+        function resize() {
+            canvas.width = canvas.clientWidth;
+            canvas.height = canvas.clientHeight;
+        }
+        window.onresize = resize;
+        resize();
     </script>
 </body>
 </html>
