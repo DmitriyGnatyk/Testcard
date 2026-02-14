@@ -3,220 +3,217 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>WORRY | VIBE</title>
+    <title>SYSTEM_OVERRIDE // WORRY</title>
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Syncopate:wght@700&family=Inter:wght@300;600&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@800&display=swap');
 
         :root {
-            --accent: #ff0055; /* Соковитий неон */
-            --bg: #050505;
+            --red: #ff0000;
+            --bg: #030303;
         }
 
-        * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+        * { margin: 0; padding: 0; box-sizing: border-box; cursor: crosshair; }
 
         body {
             background: var(--bg);
             color: #fff;
-            font-family: 'Inter', sans-serif;
+            font-family: 'JetBrains Mono', monospace;
             height: 100vh;
+            overflow: hidden;
             display: flex;
             justify-content: center;
             align-items: center;
-            overflow: hidden;
         }
 
-        /* ФОН: ГЛУБОКИЙ ГРАДІЄНТ + ЗЕРНИСТІСТЬ */
-        .bg-layer {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: radial-gradient(circle at center, #111 0%, #000 100%);
-            z-index: -2;
+        /* ЕФЕКТ CRT МОНІТОРА */
+        body::before {
+            content: " ";
+            position: fixed; top: 0; left: 0; bottom: 0; right: 0;
+            background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%), 
+                        linear-gradient(90deg, rgba(255, 0, 0, 0.06), rgba(0, 255, 0, 0.02), rgba(0, 0, 255, 0.06));
+            z-index: 100;
+            background-size: 100% 2px, 3px 100%;
+            pointer-events: none;
         }
 
-        /* ЕКРАН ВХОДУ */
-        #enter-screen {
-            position: fixed; inset: 0; background: #000; z-index: 1000;
-            display: flex; justify-content: center; align-items: center;
-            transition: opacity 1s cubic-bezier(0.4, 0, 0.2, 1);
-        }
-        .enter-btn {
-            font-family: 'Syncopate', sans-serif;
-            font-size: 14px; letter-spacing: 5px; color: var(--accent);
-            border: 1px solid var(--accent); padding: 20px 40px;
-            text-transform: uppercase; cursor: pointer;
-            box-shadow: 0 0 15px rgba(255, 0, 85, 0.2);
-            transition: 0.3s;
-        }
-        .enter-btn:active { transform: scale(0.95); background: var(--accent); color: #000; }
-
-        /* ГОЛОВНА КАРТКА */
-        .main-container {
-            position: relative; width: 90%; max-width: 400px;
-            opacity: 0; transform: translateY(30px);
-            transition: 1.5s cubic-bezier(0.2, 1, 0.3, 1);
-            z-index: 10;
-        }
-
-        .glass-card {
-            background: rgba(255, 255, 255, 0.02);
-            border: 1px solid rgba(255, 255, 255, 0.05);
-            border-radius: 24px; padding: 40px 20px;
-            backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
-            text-align: center; position: relative; overflow: hidden;
-            box-shadow: 0 20px 40px rgba(0,0,0,0.6);
-        }
-
-        /* ПУЛЬСУЮЧЕ СВІТЛО НА ФОНІ КАРТКИ */
-        .glow {
-            position: absolute; top: 50%; left: 50%;
+        /* ВІДЕО-ФОН (АБСТРАКЦІЯ) */
+        .video-bg {
+            position: fixed; inset: 0;
             width: 100%; height: 100%;
-            background: var(--accent);
-            filter: blur(120px); opacity: 0.1;
-            transform: translate(-50%, -50%);
-            z-index: -1; transition: opacity 0.1s;
+            object-fit: cover;
+            opacity: 0.2;
+            z-index: -1;
+            filter: grayscale(100%) contrast(150%);
         }
 
-        .avatar {
-            width: 130px; height: 130px; border-radius: 50%;
-            margin: 0 auto 25px; object-fit: cover;
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            transition: 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        /* ПРЕЛОАДЕР */
+        #boot-screen {
+            position: fixed; inset: 0; background: #000; z-index: 1000;
+            padding: 20px; font-size: 12px; color: #0f0; overflow: hidden;
+            display: flex; flex-direction: column; justify-content: flex-end;
         }
 
+        /* ГОЛОВНИЙ КОНТЕЙНЕР */
+        .wrapper {
+            position: relative;
+            width: 90%; max-width: 450px;
+            text-align: center;
+            opacity: 0;
+            transition: opacity 0.5s;
+        }
+
+        /* АВАТАР З ЕФЕКТОМ ГЛІТЧУ */
+        .avatar-box {
+            position: relative;
+            display: inline-block;
+            margin-bottom: 30px;
+        }
+        .avatar-box img {
+            width: 180px; height: 180px;
+            border: 4px solid #fff;
+            filter: grayscale(1);
+            display: block;
+        }
+
+        /* ТЕКСТ */
         h1 {
-            font-family: 'Syncopate', sans-serif; font-size: 1.5rem;
-            letter-spacing: 6px; margin-bottom: 8px; text-transform: uppercase;
+            font-size: 2.5rem; letter-spacing: -2px;
+            text-transform: uppercase; line-height: 0.9;
+            margin-bottom: 20px;
+            text-shadow: 2px 2px 0 var(--red);
         }
 
-        .sub { font-size: 0.7rem; color: #666; letter-spacing: 3px; margin-bottom: 30px; }
-
-        /* ВІЗУАЛІЗАТОР (СМУЖКИ) */
-        #visualizer {
-            width: 100%; height: 40px; margin-bottom: 20px;
+        .status-bar {
+            background: #fff; color: #000;
+            padding: 5px 10px; font-size: 0.8rem;
+            display: inline-block; margin-bottom: 40px;
+            font-weight: bold;
         }
 
-        .links { display: flex; flex-direction: column; gap: 12px; }
-        .link {
-            padding: 14px; border-radius: 12px;
-            background: rgba(255, 255, 255, 0.03);
-            border: 1px solid rgba(255, 255, 255, 0.05);
-            color: #fff; text-decoration: none; font-size: 0.8rem;
-            font-weight: 600; letter-spacing: 1px; transition: 0.3s;
+        /* КНОПКИ-ЛІНКИ (BRUTALISM) */
+        .nav { display: flex; flex-direction: column; gap: 10px; }
+        .nav-link {
+            border: 2px solid #fff;
+            padding: 15px;
+            color: #fff; text-decoration: none;
+            text-transform: uppercase; font-size: 1rem;
+            transition: 0.1s;
+            position: relative;
         }
-        .link:active { background: #fff; color: #000; }
+        .nav-link:hover {
+            background: #fff; color: #000;
+            transform: skewX(-5deg);
+        }
 
-        /* ПЛЕЄР (МІНІМАЛ) */
-        .player-status {
-            margin-top: 30px; font-size: 10px; color: var(--accent);
-            letter-spacing: 2px; text-transform: uppercase;
+        /* CHROMATIC ABERRATION (ДЛЯ БАСУ) */
+        .aberration {
+            animation: move 0.1s infinite;
+            filter: drop-shadow(4px 0px 0px rgba(255,0,0,0.7)) 
+                    drop-shadow(-4px 0px 0px rgba(0,255,255,0.7));
+        }
+
+        @keyframes move {
+            0% { transform: translate(2px, 1px); }
+            50% { transform: translate(-1px, -2px); }
+            100% { transform: translate(1px, 1px); }
         }
 
     </style>
 </head>
-<body>
+<body onclick="launchSystem()">
 
-    <div class="bg-layer"></div>
-    
-    <div id="enter-screen" onclick="initSite()">
-        <div class="enter-btn">ENTER VOID</div>
+    <video class="video-bg" id="bg-vid" loop muted playsinline>
+        <source src="https://assets.mixkit.co/videos/preview/mixkit-glitch-effect-of-a-television-screen-27341-large.mp4" type="video/mp4">
+    </video>
+
+    <div id="boot-screen">
+        <div id="boot-logs"></div>
+        <div style="margin-top: 20px; font-size: 20px;">[ CLICK TO BYPASS SYSTEM ]</div>
     </div>
 
-    <div class="main-container" id="main">
-        <div class="glow" id="glow"></div>
-        <div class="glass-card">
-            <img src="https://picsum.photos/400/400?grayscale" class="avatar" id="avatar">
-            <h1>GHOST</h1>
-            <div class="sub">WORRY // SLOWED</div>
+    <div class="wrapper" id="content">
+        <div class="avatar-box" id="av-box">
+            <img src="https://picsum.photos/400/400?grayscale" alt="User">
+        </div>
+        
+        <h1 id="title">LOST_SOUL</h1>
+        <div class="status-bar">MODE: WORRY_SLOWED.EXE</div>
 
-            <canvas id="visualizer"></canvas>
-
-            <div class="links">
-                <a href="#" class="link">TELEGRAM</a>
-                <a href="#" class="link">INSTAGRAM</a>
-                <a href="#" class="link">SPOTIFY</a>
-            </div>
-
-            <div class="player-status">Playing: Worry (Slowed)</div>
+        <div class="nav">
+            <a href="#" class="nav-link">TELEGRAM // CONNECT</a>
+            <a href="#" class="nav-link">INSTAGRAM // FEED</a>
+            <a href="#" class="nav-link">SPOTIFY // VIBE</a>
         </div>
     </div>
 
-    <audio id="audio" loop playsinline>
+    <audio id="track" loop playsinline>
         <source src="music.mp3" type="audio/mpeg">
     </audio>
 
     <script>
-        const audio = document.getElementById('audio');
-        const main = document.getElementById('main');
-        const glow = document.getElementById('glow');
-        const avatar = document.getElementById('avatar');
-        const canvas = document.getElementById('visualizer');
-        const ctx = canvas.getContext('2d');
+        const logs = [
+            "INITIALIZING BOOT SEQUENCE...",
+            "LOADING CORE_KERNEL.BIN...",
+            "DECRYPTING AUDIO_STREAM...",
+            "BYPASSING FIREWALL... [DONE]",
+            "STABILIZING VISUAL_FX...",
+            "SYSTEM READY."
+        ];
 
-        function initSite() {
-            document.getElementById('enter-screen').style.opacity = '0';
-            setTimeout(() => {
-                document.getElementById('enter-screen').remove();
-                main.style.opacity = '1';
-                main.style.transform = 'translateY(0)';
-            }, 1000);
+        let logIdx = 0;
+        const logContainer = document.getElementById('boot-logs');
 
-            startAudioEngine();
+        function printLogs() {
+            if (logIdx < logs.length) {
+                const p = document.createElement('div');
+                p.textContent = "> " + logs[logIdx];
+                logContainer.appendChild(p);
+                logIdx++;
+                setTimeout(printLogs, 150);
+            }
+        }
+        printLogs();
+
+        function launchSystem() {
+            document.getElementById('boot-screen').style.display = 'none';
+            document.getElementById('content').style.opacity = '1';
+            document.getElementById('bg-vid').play();
+            startAudio();
         }
 
-        function startAudioEngine() {
+        function startAudio() {
+            const audio = document.getElementById('track');
             audio.play();
-            const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-            const analyser = audioCtx.createAnalyser();
-            const source = audioCtx.createMediaElementSource(audio);
-            
+
+            const ctx = new (window.AudioContext || window.webkitAudioContext)();
+            const analyser = ctx.createAnalyser();
+            const source = ctx.createMediaElementSource(audio);
             source.connect(analyser);
-            analyser.connect(audioCtx.destination);
-            analyser.fftSize = 64; 
+            analyser.connect(ctx.destination);
+            analyser.fftSize = 32;
 
-            const bufferLength = analyser.frequencyBinCount;
-            const dataArray = new Uint8Array(bufferLength);
+            const dataArray = new Uint8Array(analyser.frequencyBinCount);
 
-            function draw() {
-                requestAnimationFrame(draw);
+            function update() {
                 analyser.getByteFrequencyData(dataArray);
+                const bass = dataArray[1]; // Сила басу
 
-                // Очищуємо канвас
-                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                const content = document.getElementById('content');
+                const av = document.getElementById('av-box');
 
-                let barWidth = (canvas.width / bufferLength) * 2.5;
-                let barHeight;
-                let x = 0;
-
-                // Малюємо смужки
-                for(let i = 0; i < bufferLength; i++) {
-                    barHeight = dataArray[i] / 4;
-                    ctx.fillStyle = `rgba(255, 0, 85, ${barHeight / 40})`;
-                    ctx.fillRect(x, canvas.height - barHeight, barWidth, barHeight);
-                    x += barWidth + 2;
+                // Якщо бас потужний (налаштуй поріг під свій трек)
+                if (bass > 200) {
+                    content.classList.add('aberration');
+                    av.style.transform = `scale(${1 + bass/500}) skew(${bass/20}deg)`;
+                } else {
+                    content.classList.remove('aberration');
+                    av.style.transform = `scale(1) skew(0deg)`;
                 }
 
-                // Ефекти під бас
-                const bass = dataArray[2]; // Низька частота
-                
-                // Пульсація світіння
-                glow.style.opacity = (bass / 255) * 0.6;
-                
-                // Легке масштабування аватарки (не крінжове)
-                const s = 1 + (bass / 1000);
-                avatar.style.transform = `scale(${s})`;
-                
-                // Тінь карти реагує на бас
-                main.style.filter = `drop-shadow(0 0 ${bass/10}px rgba(255, 0, 85, 0.3))`;
+                requestAnimationFrame(update);
             }
-            draw();
+            update();
         }
-
-        // Авто-ресайз канваса
-        function resize() {
-            canvas.width = canvas.clientWidth;
-            canvas.height = canvas.clientHeight;
-        }
-        window.onresize = resize;
-        resize();
     </script>
 </body>
 </html>
